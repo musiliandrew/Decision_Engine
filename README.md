@@ -1,20 +1,16 @@
-# CareerScoper Decision Engine
+# Decision Engine Microservice
 
-The Decision Engine is a **stateless, pure-inference microservice** for the CareerScoper ecosystem. It evaluates candidate-to-job fit, calculates objective readiness scores, and generates explainable reasoning traces using Google Gemini.
+A **stateless, pure-inference microservice** designed to evaluate candidate-to-job fit, calculate objective readiness scores, and generate explainable AI reasoning traces. 
 
-It is built with **FastAPI** and **`pydantic-ai`**.
+Built with **FastAPI** and **`pydantic-ai`**, this service abstracts complex LLM operations (via Google Gemini) into a deterministic, high-throughput HTTP API.
 
 ## Architecture Overview
-Unlike standard web applications, the Decision Engine has **zero database dependencies**. It does not connect to Postgres, Redis, or any Vector DB. It operates purely as a mathematical inference engine. 
+This engine has **zero database dependencies**. It operates purely as a mathematical and reasoning layer. It receives a standardized JSON representation of a Candidate Profile and a Job Description, processes the semantic match, and returns a strict JSON decision payload.
 
-It receives a standardized JSON representation of a Candidate Profile and a Job Description, runs a deterministic pipeline alongside a Gemini reasoning layer, and returns a strict JSON response.
-
-### How it integrates with CareerScoper
-1. **The Monolith (Django):** The main CareerScoper API queries the database to gather a user's skills and the specific job details.
-2. **The Hand-off:** Django formats this data into an `EvaluateMatchRequest` and sends it to the Decision Engine via an HTTP POST request.
-3. **Inference:** The Decision Engine processes the match, checking for capability gaps, calculating a win probability, and using Gemini to generate a human-readable explanation (`ReasonedExplanation`).
-4. **The Return:** The engine returns a `DecisionResult` JSON payload back to Django.
-5. **Storage:** Django receives the result and caches it in the shared Postgres database (`JobMatchScores` table) so the engine doesn't need to recalculate it again.
+### Core Capabilities
+1. **Gap Analysis:** Identifies missing capabilities or skills required for a role.
+2. **Win Probability:** Calculates a statistical readiness score based on capability overlap.
+3. **Reasoning Traces:** Generates human-readable, explainable AI commentary on why a candidate is or isn't a fit.
 
 ## API Contracts
 
@@ -56,6 +52,5 @@ It receives a standardized JSON representation of a Candidate Profile and a Job 
 1. Create a virtual environment: `python -m venv env`
 2. Activate it: `source env/bin/activate`
 3. Install dependencies: `pip install -r requirements.txt`
-4. Run the server: `uvicorn api:app --reload --port 8000`
-
-Ensure you have your Google Cloud credentials/API keys configured in your environment to allow Gemini to execute.
+4. Set required API Keys (e.g., `GEMINI_API_KEY`) in your environment.
+5. Run the server: `uvicorn api:app --reload --port 8000`
