@@ -18,7 +18,7 @@ class AnalyzeRejectionPipeline:
     async def execute(request: AnalyzeRejectionRequest) -> StudyGuideResult:
         settings = DecisionSettings()
         gemini = GeminiProvider(settings)
-        prompt = PromptRegistry.get("reasoning.analyze_rejection")
+        prompt = PromptRegistry.load("reasoning.analyze_rejection")
         context = ExecutionContext(trace_id=str(uuid4()))
         
         variables = {
