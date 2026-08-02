@@ -9,6 +9,14 @@ from pipelines.analyze_rejection import AnalyzeRejectionPipeline
 
 app = FastAPI(title="CareerScope Decision Engine")
 
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "service": "decision-engine"}
+
+@app.get("/")
+def root():
+    return {"message": "CareerScope Decision Engine API"}
+
 @app.post("/api/v1/reasoning/evaluate_match", response_model=DecisionResult)
 async def evaluate_match_endpoint(request: EvaluateMatchRequest):
     """
